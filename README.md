@@ -8,6 +8,7 @@ Using NotificationCenter is simple.  In order to use the default center, simply 
 ```C++
 NotificationCenter::defaultNotificationCenter()->addObserver([=]{printf("Hello world!\n");}, "My Observer");
 ```
+NotificationCenter is intended to be included directly in your projects, as such no library (dynamic or static) is provided.
 
 ###Supported Compilers
 NotificationCenter requires a compiler that supports the following C++11 APIs:
