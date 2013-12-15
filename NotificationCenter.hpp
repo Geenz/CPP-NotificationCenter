@@ -1,5 +1,5 @@
 /*
- *  NotificationCenter.h
+ *  NotificationCenter.hpp
  *  Notification Center CPP
  *
  *  Created by Jonathan Goodman on 11/23/13.
@@ -36,7 +36,7 @@
 #include <thread>
 
 struct NotificationObserver {
-    std::function<void()> callback;
+    std::function<void(void)> callback;
 };
 
 class NotificationCenter {
@@ -46,27 +46,49 @@ class NotificationCenter {
 public:
     
     typedef std::map<std::string, std::list<NotificationObserver> >::const_iterator notification_const_itr_t;
+    typedef std::map<std::string, std::list<NotificationObserver> >::iterator notification_itr_t;
     typedef std::list<NotificationObserver>::const_iterator observer_const_itr_t;
+    typedef std::list<NotificationObserver>::iterator observer_itr_t;
     
     /**
      * This method adds a function callback as an observer to a named notification.
      * @param method the function callback.  Accepts void(void) methods or lambdas.
      * @param name the name of the notification you wish to observe.
      */
-    observer_const_itr_t addObserver(std::function<void()> method, const std::string& name);
+    observer_const_itr_t addObserver(std::function<void(void)> method, const std::string& name);
+    
+    /**
+     * This method adds a function callback as an observer to a given notification.
+     * @param method the function callback.  Accepts void(void) methods or lambdas.
+     * @param name the name of the notification you wish to observe.
+     */
+    observer_const_itr_t addObserver(std::function<void(void)> method, notification_itr_t& notification);
     
     /**
      * This method removes an observer by iterator.
      * @param name the name of the notification you wish to remove a given observer from.
      * @param observer the iterator to the observer you wish to remove.
      */
-    void removeObserver(const std::string& name, std::list<NotificationObserver>::const_iterator& observer);
+    void removeObserver(const std::string& name, observer_const_itr_t& observer);
+    
+    /**
+     * This method removes an observer by iterator.
+     * @param notification the iterator of the notification you wish to remove a given observer from.
+     * @param observer the iterator to the observer you wish to remove.
+     */
+    void removeObserver(notification_itr_t& notification, observer_const_itr_t& observer);
     
     /**
      * This method removes all observers from a given notification, removing the notification from being tracked outright.
      * @param name the name of the notification you wish to remove.
      */
     void removeAllObservers(const std::string& name);
+    
+    /**
+     * This method removes all observers from a given notification, removing the notification from being tracked outright.
+     * @param notification the iterator of the notification you wish to remove.
+     */
+    void removeAllObservers(notification_itr_t& notification);
     
     /**
      * This method posts a notification to a set of observers.
@@ -82,7 +104,12 @@ public:
      */
     bool postNotification(notification_const_itr_t& notification) const;
     
-    notification_const_itr_t getNotificationIterator(const std::string& notification) const;
+    /**
+     * This method retrieves a notification iterator for a named notification.
+     * The returned iterator may be used with the overloaded variants of postNotification, removeAllObservers, removeObserver, and addObserver to avoid string lookups.
+     * @param name the name of the notification you wish to post.
+     */
+    notification_itr_t getNotificationIterator(const std::string& notification);
     
     /**
      * This method returns the default global notification center.  You may alternatively create your own notification center without using the default notification center.

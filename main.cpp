@@ -27,6 +27,15 @@
 #include <iostream>
 #include "NotificationCenter.hpp"
 
+class Foo {
+    
+public:
+    void func()
+    {
+        printf("Hello world!\n");
+    }
+};
+
 void runNotification()
 {
     NotificationCenter::observer_const_itr_t i1 = NotificationCenter::defaultNotificationCenter()->addObserver([=]{printf("Recieved notification %d!\n", 1);}, "Poster");
@@ -82,6 +91,12 @@ void runNotification()
     NotificationCenter::notification_const_itr_t itr = NotificationCenter::defaultNotificationCenter()->getNotificationIterator("Second Poster");
     NotificationCenter::defaultNotificationCenter()->postNotification(itr);
     printf("============\n");
+    
+    Foo myFoo;
+    
+    NotificationCenter::defaultNotificationCenter()->addObserver(std::bind(&Foo::func, myFoo), "Second Poster");
+    NotificationCenter::defaultNotificationCenter()->postNotification("Second Poster");
+    
 }
 
 int main(int argc, const char * argv[])

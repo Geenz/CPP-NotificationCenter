@@ -14,6 +14,7 @@ notification_center_example: NotificationCenter.o main.o
 	rm -f NotificationCenter.o
 	rm -f main.o
 	rm -f NotificationCenter.hpp.gch
+	./notification_center_example
 
 clean:
 	rm -f notification_center_example
