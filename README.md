@@ -9,7 +9,21 @@ Using NotificationCenter is simple.  In order to use the default center, simply 
 NotificationCenter::defaultNotificationCenter()->addObserver([=]{printf("Hello world!\n");}, "My Observer");
 ```
 
-### Adding Observers
+###Supported Compilers
+NotificationCenter requires a compiler that supports the following C++11 APIs:
+```C++
+std::mutex
+std::function
+std::bind
+std::shared_ptr
+```
+It has been tested on the following compilers (as of December 15th, 2013):
+
+Compiler Name | Version | Pass/Fail | Notes
+--- | --- | --- | ---
+Clang | 3.3 | Pass | N/A
+
+###Adding Observers
 
 Adding observers is a simple porcess.  Simply invoke the method `NotificationCenter::addObserver` on your NotificationCenter passing in a function pointer and string for the notification that this observer should respond to.  A couple of examples of how to do this are:
 
@@ -22,14 +36,14 @@ NotificationCenter::defaultNotificationCenter()->addObserver(std::bind(&Foo::fun
 
 Currently, only `void(void)` function signatures are supported.
 
-### Posting Notifications
+###Posting Notifications
 Posting notifications can be done with `NotificationCenter::postNotification`, like so:
 
 ```C++
 NotificationCenter::defaultNotificationCenter()->postNotification("My Observer");
 ```
 
-### Avoiding Unnecessary Lookups
+###Avoiding Unnecessary Lookups
 Notifications can be posted and modified by either string or iterator.  Posting or modifying by string incurs a string lookup, which depending on the application may not be ideal.  For these situations, the best option when using NotificationCenter is to post and modify by iterator.  An example of how to do this is:
 ```C++
 NotificationCenter::notification_itr_t notiItr = NotificationCenter::defaultNotificationCenter()->getNotificationIterator("My Observer");
