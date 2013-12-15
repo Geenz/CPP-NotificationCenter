@@ -34,6 +34,7 @@
 #include <list>
 #include <memory>
 #include <thread>
+#include <mutex>
 
 struct NotificationObserver {
     std::function<void(void)> callback;
