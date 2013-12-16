@@ -54,6 +54,9 @@ NotificationCenter::defaultNotificationCenter()->postNotification(notiItr);
 ```
 `NotificationCenter::addObserver`, `NotificationCenter::removeObserver`, `NotificationCenter::removeAllObservers`, and `NotificationCenter::postNotification` all support notification iterators in overloaded methods.
 
+###Multiple NotificationCenters
+You can also use more than one instance of NotificationCenter.  Although a default notification center is provided, you can also create your own notification centers for whatever purpose you may require them for.
+
 ###Example Program
 The included example program shows you the basics of how to use NotificationCenter.  It's not intended to be sophisticated by any means, just to showcase the basics.
 
