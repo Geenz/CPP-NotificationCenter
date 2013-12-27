@@ -32,7 +32,7 @@ class Foo {
 public:
     void func()
     {
-        printf("Hello world!\n");
+        printf("Hello std::bind!\n");
     }
 };
 

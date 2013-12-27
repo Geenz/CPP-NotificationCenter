@@ -53,9 +53,10 @@ NotificationCenter::observer_const_itr_t NotificationCenter::addObserver(std::fu
 void NotificationCenter::removeObserver(const std::string& name, std::list<NotificationObserver>::const_iterator& observer)
 {
     std::lock_guard<std::mutex> lock(_mutex);
-    if (_observers.find(name) != _observers.end())
+    notification_const_itr_t i = _observers.find(name);
+    if (i != _observers.end())
     {
-        _observers.at(name).erase(observer);
+        _observers.erase(i);
     }
 }
 
@@ -86,12 +87,13 @@ void NotificationCenter::removeAllObservers(notification_itr_t& notification)
 bool NotificationCenter::postNotification(const std::string& notification) const
 {
     std::lock_guard<std::mutex> lock(_mutex);
-    if (_observers.find(notification) != _observers.end())
+    notification_const_itr_t i = _observers.find(notification);
+    if (i != _observers.end())
     {
-        const std::list<NotificationObserver>& notiList = _observers.at(notification);
-        for (observer_const_itr_t i = notiList.begin(); i != notiList.end(); i++)
+        const std::list<NotificationObserver>& notiList = i->second;
+        for (observer_const_itr_t ia = notiList.begin(); ia != notiList.end(); ia++)
         {
-            i->callback();
+            ia->callback();
         }
         return true;
     }
