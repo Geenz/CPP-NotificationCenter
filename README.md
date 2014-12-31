@@ -49,7 +49,7 @@ NotificationCenter::defaultNotificationCenter()->postNotification("My Observer")
 Notifications can be posted and modified by either string or iterator.  Posting or modifying by string incurs a string lookup, which depending on the application may not be ideal.  For these situations, the best option when using NotificationCenter is to post and modify by iterator.  An example of how to do this is:
 ```C++
 NotificationCenter::notification_itr_t notiItr = NotificationCenter::defaultNotificationCenter()->getNotificationIterator("My Observer");
-NotificationCenter::defaultNotificationCenter()->addObserver([=]{printf("I'm being posted by an iterator!\n", notiItr);
+NotificationCenter::defaultNotificationCenter()->addObserver([=]{printf("I'm being posted by an iterator!\n");}, notiItr);
 NotificationCenter::defaultNotificationCenter()->postNotification(notiItr);
 ```
 `NotificationCenter::addObserver`, `NotificationCenter::removeObserver`, `NotificationCenter::removeAllObservers`, and `NotificationCenter::postNotification` all support notification iterators in overloaded methods.
