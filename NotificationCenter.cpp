@@ -53,11 +53,12 @@ NotificationCenter::observer_const_itr_t NotificationCenter::addObserver(std::fu
 void NotificationCenter::removeObserver(const std::string& name, std::list<NotificationObserver>::const_iterator& observer)
 {
     std::lock_guard<std::mutex> lock(_mutex);
-    notification_const_itr_t i = _observers.find(name);
-    if (i != _observers.end())
+    try
     {
-        _observers.erase(i);
+        auto & list = _observers.at(name);
+        list.erase(observer);
     }
+    catch (const std::out_of_range &) {}
 }
 
 void NotificationCenter::removeObserver(notification_itr_t& notification, std::list<NotificationObserver>::const_iterator& observer)
