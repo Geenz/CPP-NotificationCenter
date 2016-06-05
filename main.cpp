@@ -38,11 +38,11 @@ public:
 
 void runNotification()
 {
-    NotificationCenter::observer_const_itr_t i1 = NotificationCenter::defaultNotificationCenter()->addObserver([=]{printf("Recieved notification %d!\n", 1);}, "Poster");
-    NotificationCenter::observer_const_itr_t i2 = NotificationCenter::defaultNotificationCenter()->addObserver([=]{printf("Recieved notification %d!\n", 2);}, "Poster");
-    NotificationCenter::observer_const_itr_t i3 = NotificationCenter::defaultNotificationCenter()->addObserver([=]{printf("Recieved notification %d!\n", 3);}, "Poster");
-    NotificationCenter::observer_const_itr_t i4 = NotificationCenter::defaultNotificationCenter()->addObserver([=]{printf("Recieved notification %d!\n", 4);}, "Poster");
-    NotificationCenter::observer_const_itr_t i5 = NotificationCenter::defaultNotificationCenter()->addObserver([=]{printf("Recieved notification %d!\n", 5);}, "Poster");
+    auto i1 = NotificationCenter::defaultNotificationCenter()->addObserver([=]{printf("Recieved notification %d!\n", 1);}, "Poster");
+    auto i2 = NotificationCenter::defaultNotificationCenter()->addObserver([=]{printf("Recieved notification %d!\n", 2);}, "Poster");
+    auto i3 = NotificationCenter::defaultNotificationCenter()->addObserver([=]{printf("Recieved notification %d!\n", 3);}, "Poster");
+    auto i4 = NotificationCenter::defaultNotificationCenter()->addObserver([=]{printf("Recieved notification %d!\n", 4);}, "Poster");
+    auto i5 = NotificationCenter::defaultNotificationCenter()->addObserver([=]{printf("Recieved notification %d!\n", 5);}, "Poster");
     NotificationCenter::defaultNotificationCenter()->addObserver([=]{printf("Recieved notification %d!\n", 6);}, "Poster");
     NotificationCenter::defaultNotificationCenter()->addObserver([=]{printf("Recieved notification %d!\n", 7);}, "Poster");
     NotificationCenter::defaultNotificationCenter()->addObserver([=]{printf("Recieved notification %d!\n", 8);}, "Poster");

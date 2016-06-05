@@ -25,7 +25,7 @@
  */
 #include "NotificationCenter.hpp"
 
-std::shared_ptr<NotificationCenter> NotificationCenter::_defaultCenter = NULL;
+std::shared_ptr<NotificationCenter> NotificationCenter::_defaultCenter = nullptr;
 
 NotificationCenter::observer_const_itr_t NotificationCenter::addObserver(std::function<void()> method, const std::string& name)
 {
@@ -50,17 +50,17 @@ NotificationCenter::observer_const_itr_t NotificationCenter::addObserver(std::fu
     return retVal;
 }
 
-void NotificationCenter::removeObserver(const std::string& name, std::list<NotificationObserver>::const_iterator& observer)
+void NotificationCenter::removeObserver(const std::string& name, observer_const_itr_t& observer)
 {
     std::lock_guard<std::mutex> lock(_mutex);
-    notification_const_itr_t i = _observers.find(name);
+    notification_itr_t i = _observers.find(name);
     if (i != _observers.end())
     {
-        _observers.erase(i);
+        i->second.erase(observer);
     }
 }
 
-void NotificationCenter::removeObserver(notification_itr_t& notification, std::list<NotificationObserver>::const_iterator& observer)
+void NotificationCenter::removeObserver(notification_itr_t& notification, observer_const_itr_t& observer)
 {
     std::lock_guard<std::mutex> lock(_mutex);
     if (notification != _observers.end())
