@@ -104,7 +104,7 @@ public:
      */
     void removeAllObservers
 	(
-		notification_itr_t& aNotification	///< the iterator of the notification you wish to remove.
+		notification_itr_t& aNotification	///< The iterator of the notification you wish to remove.
 	);
     
     /**
@@ -114,7 +114,8 @@ public:
      */
     bool postNotification
 	(
-		const std::string& aNotification	///< the name of the notification you wish to post.
+		const std::string& aNotification,	///< The name of the notification you wish to post.
+		std::any aPayload					///< The payload associated with the specified notification.
 	) const;
     
     /**
@@ -124,7 +125,8 @@ public:
      */
     bool postNotification
 	(
-		notification_const_itr_t& aNotification	///< The name of the notification you wish to post.
+		notification_const_itr_t& aNotification,	///< The name of the notification you wish to post.
+		std::any aPayload							///< The payload associated with the specified notification.
 	) const;
     
     /**

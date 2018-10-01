@@ -84,7 +84,7 @@ void NotificationCenter::removeAllObservers(notification_itr_t& notification)
     }
 }
 
-bool NotificationCenter::postNotification(const std::string& notification) const
+bool NotificationCenter::postNotification(const std::string& notification, std::any aPayload) const
 {
     std::lock_guard<std::mutex> lock(mMutex);
     notification_const_itr_t i = mObservers.find(notification);
@@ -93,7 +93,7 @@ bool NotificationCenter::postNotification(const std::string& notification) const
         const std::list<NotificationObserver>& notiList = i->second;
         for (observer_const_itr_t ia = notiList.begin(); ia != notiList.end(); ia++)
         {
-            ia->mCallback();
+            ia->mCallback(aPayload);
         }
         return true;
     }
@@ -104,7 +104,7 @@ bool NotificationCenter::postNotification(const std::string& notification) const
     }
 }
 
-bool NotificationCenter::postNotification(NotificationCenter::notification_const_itr_t& notification) const
+bool NotificationCenter::postNotification(NotificationCenter::notification_const_itr_t& notification, std::any aPayload) const
 {
     std::lock_guard<std::mutex> lock(mMutex);
     if (notification != mObservers.end())
@@ -112,7 +112,7 @@ bool NotificationCenter::postNotification(NotificationCenter::notification_const
         const std::list<NotificationObserver>& notiList = notification->second;
         for (observer_const_itr_t i = notiList.begin(); i != notiList.end(); i++)
         {
-            i->mCallback();
+            i->mCallback(aPayload);
         }
         return true;
     }
