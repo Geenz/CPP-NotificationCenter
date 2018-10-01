@@ -25,7 +25,7 @@
  */
 
 #include <iostream>
-#include "NotificationCenter.hpp"
+#include "NotificationCenter.h"
 
 class Foo {
     

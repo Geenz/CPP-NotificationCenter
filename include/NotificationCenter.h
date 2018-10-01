@@ -1,5 +1,5 @@
 /*
- *  NotificationCenter.hpp
+ *  NotificationCenter.h
  *  Notification Center CPP
  *
  *  Created by Jonathan Goodman on 11/23/13.
@@ -35,15 +35,19 @@
 #include <memory>
 #include <thread>
 #include <mutex>
+#include <any>
 
-struct NotificationObserver {
-    std::function<void(void)> callback;
+struct NotificationObserver 
+{
+    std::function<unsigned int(std::any)> mCallback;
 };
 
-class NotificationCenter {
-    static std::shared_ptr<NotificationCenter> _defaultCenter;
-    std::map<std::string, std::list<NotificationObserver> > _observers;
-    mutable std::mutex _mutex;
+class NotificationCenter 
+{
+    static std::shared_ptr<NotificationCenter> mDefaultCenter;
+    std::map<std::string, std::list<NotificationObserver> > mObservers;
+    mutable std::mutex mMutex;
+
 public:
     
     typedef std::map<std::string, std::list<NotificationObserver> >::const_iterator notification_const_itr_t;
@@ -53,69 +57,89 @@ public:
     
     /**
      * This method adds a function callback as an observer to a named notification.
-     * @param method the function callback.  Accepts void(void) methods or lambdas.
-     * @param name the name of the notification you wish to observe.
      */
-    observer_const_itr_t addObserver(std::function<void(void)> method, const std::string& name);
+    observer_const_itr_t addObserver
+	(
+		std::function<unsigned int(std::any)> aMethod,	///< The function callback.  Accepts unsigned int(std::any) methods or lambdas.
+		const std::string& aName						///< The name of the notification you wish to observe.
+	);
     
     /**
      * This method adds a function callback as an observer to a given notification.
-     * @param method the function callback.  Accepts void(void) methods or lambdas.
-     * @param name the name of the notification you wish to observe.
      */
-    observer_const_itr_t addObserver(std::function<void(void)> method, notification_itr_t& notification);
+    observer_const_itr_t addObserver
+	(
+		std::function<unsigned int(std::any)> aMethod,	///< The function callback.  Accepts unsigned int(std::any) methods or lambdas.
+		notification_itr_t& aNotification				///< The name of the notification you wish to observe.
+	);
     
     /**
      * This method removes an observer by iterator.
-     * @param name the name of the notification you wish to remove a given observer from.
-     * @param observer the iterator to the observer you wish to remove.
      */
-    void removeObserver(const std::string& name, observer_const_itr_t& observer);
+    void removeObserver
+	(
+		const std::string& aName,		///< The name of the notification you wish to remove a given observer from.
+		observer_const_itr_t& aObserver	///< The iterator to the observer you wish to remove.
+	);
     
     /**
      * This method removes an observer by iterator.
-     * @param notification the iterator of the notification you wish to remove a given observer from.
-     * @param observer the iterator to the observer you wish to remove.
      */
-    void removeObserver(notification_itr_t& notification, observer_const_itr_t& observer);
+    void removeObserver
+	(
+		notification_itr_t& aNotification,	///< The iterator of the notification you wish to remove a given observer from.
+		observer_const_itr_t& aObserver		///< The iterator to the observer you wish to remove.
+	);
     
     /**
      * This method removes all observers from a given notification, removing the notification from being tracked outright.
-     * @param name the name of the notification you wish to remove.
      */
-    void removeAllObservers(const std::string& name);
+    void removeAllObservers
+	(
+		const std::string& aName	///< The name of the notification you wish to remove.
+	);
     
     /**
      * This method removes all observers from a given notification, removing the notification from being tracked outright.
-     * @param notification the iterator of the notification you wish to remove.
      */
-    void removeAllObservers(notification_itr_t& notification);
+    void removeAllObservers
+	(
+		notification_itr_t& aNotification	///< the iterator of the notification you wish to remove.
+	);
     
     /**
      * This method posts a notification to a set of observers.
-     * If successful, this function calls all callbacks associated with that notification and return true.  If no such notification exists, this function will print a warning to the console and return false.
-     * @param name the name of the notification you wish to post.
+     * If successful, this function calls all callbacks associated with that notification and return true. 
+	 * If no such notification exists, this function will print a warning to the console and return false.
      */
-    bool postNotification(const std::string& notification) const;
+    bool postNotification
+	(
+		const std::string& aNotification	///< the name of the notification you wish to post.
+	) const;
     
     /**
      * This method posts a notification to a set of observers.
-     * If successful, this function calls all callbacks associated with that notification and return true.  If no such notification exists, this function will print a warning to the console and return false.
-     * @param name the name of the notification you wish to post.
+     * If successful, this function calls all callbacks associated with that notification and return true.  
+	 * If no such notification exists, this function will print a warning to the console and return false.
      */
-    bool postNotification(notification_const_itr_t& notification) const;
+    bool postNotification
+	(
+		notification_const_itr_t& aNotification	///< The name of the notification you wish to post.
+	) const;
     
     /**
      * This method retrieves a notification iterator for a named notification.
      * The returned iterator may be used with the overloaded variants of postNotification, removeAllObservers, removeObserver, and addObserver to avoid string lookups.
-     * @param name the name of the notification you wish to post.
      */
-    notification_itr_t getNotificationIterator(const std::string& notification);
+    notification_itr_t getNotificationIterator
+	(
+		const std::string& aNotification	///< The name of the notification you wish to post.
+	);
     
     /**
      * This method returns the default global notification center.  You may alternatively create your own notification center without using the default notification center.
      */
-    static std::shared_ptr<NotificationCenter> defaultNotificationCenter();
+    static NotificationCenter& defaultNotificationCenter();
 };
 
 #endif /* defined(__Notification_Center_CPP__NotificationCenter__) */

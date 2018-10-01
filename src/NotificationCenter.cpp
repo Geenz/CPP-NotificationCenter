@@ -23,27 +23,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-#include "NotificationCenter.hpp"
+#include "NotificationCenter.h"
 
-std::shared_ptr<NotificationCenter> NotificationCenter::_defaultCenter = nullptr;
+std::shared_ptr<NotificationCenter> NotificationCenter::mDefaultCenter = nullptr;
 
-NotificationCenter::observer_const_itr_t NotificationCenter::addObserver(std::function<void()> method, const std::string& name)
+NotificationCenter::observer_const_itr_t NotificationCenter::addObserver(std::function<unsigned int(std::any)> aMethod, const std::string& aName)
 {
-    std::lock_guard<std::mutex> lock(_mutex);
+    std::lock_guard<std::mutex> lock(mMutex);
     NotificationObserver n;
-    n.callback = method;
-    _observers[name].push_back(n);
-    return --_observers[name].end();
+    n.mCallback = aMethod;
+    mObservers[aName].push_back(n);
+    return --mObservers[aName].end();
 }
 
-NotificationCenter::observer_const_itr_t NotificationCenter::addObserver(std::function<void (void)> method, notification_itr_t &notification)
+NotificationCenter::observer_const_itr_t NotificationCenter::addObserver(std::function<unsigned int(std::any)> method, notification_itr_t &notification)
 {
-    std::lock_guard<std::mutex> lock(_mutex);
+    std::lock_guard<std::mutex> lock(mMutex);
     NotificationCenter::observer_const_itr_t retVal = notification->second.end();
-    if (notification != _observers.end())
+    if (notification != mObservers.end())
     {
         NotificationObserver n;
-        n.callback = method;
+        n.mCallback = method;
         notification->second.push_back(n);
         retVal = --notification->second.end();
     }
@@ -52,9 +52,9 @@ NotificationCenter::observer_const_itr_t NotificationCenter::addObserver(std::fu
 
 void NotificationCenter::removeObserver(const std::string& name, observer_const_itr_t& observer)
 {
-    std::lock_guard<std::mutex> lock(_mutex);
-    notification_itr_t i = _observers.find(name);
-    if (i != _observers.end())
+    std::lock_guard<std::mutex> lock(mMutex);
+    notification_itr_t i = mObservers.find(name);
+    if (i != mObservers.end())
     {
         i->second.erase(observer);
     }
@@ -62,8 +62,8 @@ void NotificationCenter::removeObserver(const std::string& name, observer_const_
 
 void NotificationCenter::removeObserver(notification_itr_t& notification, observer_const_itr_t& observer)
 {
-    std::lock_guard<std::mutex> lock(_mutex);
-    if (notification != _observers.end())
+    std::lock_guard<std::mutex> lock(mMutex);
+    if (notification != mObservers.end())
     {
         notification->second.erase(observer);
     }
@@ -71,29 +71,29 @@ void NotificationCenter::removeObserver(notification_itr_t& notification, observ
 
 void NotificationCenter::removeAllObservers(const std::string& name)
 {
-    std::lock_guard<std::mutex> lock(_mutex);
-    _observers.erase(name);
+    std::lock_guard<std::mutex> lock(mMutex);
+    mObservers.erase(name);
 }
 
 void NotificationCenter::removeAllObservers(notification_itr_t& notification)
 {
-    std::lock_guard<std::mutex> lock(_mutex);
-    if (notification != _observers.end())
+    std::lock_guard<std::mutex> lock(mMutex);
+    if (notification != mObservers.end())
     {
-        _observers.erase(notification);
+        mObservers.erase(notification);
     }
 }
 
 bool NotificationCenter::postNotification(const std::string& notification) const
 {
-    std::lock_guard<std::mutex> lock(_mutex);
-    notification_const_itr_t i = _observers.find(notification);
-    if (i != _observers.end())
+    std::lock_guard<std::mutex> lock(mMutex);
+    notification_const_itr_t i = mObservers.find(notification);
+    if (i != mObservers.end())
     {
         const std::list<NotificationObserver>& notiList = i->second;
         for (observer_const_itr_t ia = notiList.begin(); ia != notiList.end(); ia++)
         {
-            ia->callback();
+            ia->mCallback();
         }
         return true;
     }
@@ -106,13 +106,13 @@ bool NotificationCenter::postNotification(const std::string& notification) const
 
 bool NotificationCenter::postNotification(NotificationCenter::notification_const_itr_t& notification) const
 {
-    std::lock_guard<std::mutex> lock(_mutex);
-    if (notification != _observers.end())
+    std::lock_guard<std::mutex> lock(mMutex);
+    if (notification != mObservers.end())
     {
         const std::list<NotificationObserver>& notiList = notification->second;
         for (observer_const_itr_t i = notiList.begin(); i != notiList.end(); i++)
         {
-            i->callback();
+            i->mCallback();
         }
         return true;
     }
@@ -126,22 +126,18 @@ bool NotificationCenter::postNotification(NotificationCenter::notification_const
 NotificationCenter::notification_itr_t NotificationCenter::getNotificationIterator(const std::string& notification)
 {
     notification_itr_t retVal;
-    if (_observers.find(notification) != _observers.end())
+    if (mObservers.find(notification) != mObservers.end())
     {
-        retVal = _observers.find(notification);
+        retVal = mObservers.find(notification);
     }
     
     return retVal;
 }
 
-std::shared_ptr<NotificationCenter> NotificationCenter::defaultNotificationCenter()
+NotificationCenter& NotificationCenter::defaultNotificationCenter()
 {
-    static std::mutex mutex;
-    std::lock_guard<std::mutex> lock(mutex);
-    if (!_defaultCenter)
-    {
-        _defaultCenter = std::shared_ptr<NotificationCenter>(new NotificationCenter);
-    }
+	// Guaranteed to be destroyed. Instantiated on first use.
+	static NotificationCenter aNotificationcenter;
     
-    return _defaultCenter;
+    return aNotificationcenter;
 }
