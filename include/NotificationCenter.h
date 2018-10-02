@@ -33,7 +33,7 @@
 #include <string>
 #include <list>
 #include <memory>
-#include <thread>
+//#include <thread>
 #include <mutex>
 #include <any>
 
@@ -115,7 +115,7 @@ public:
     bool postNotification
 	(
 		const std::string& aNotification,	///< The name of the notification you wish to post.
-		std::any aPayload					///< The payload associated with the specified notification.
+		std::any aPayload = nullptr			///< The payload associated with the specified notification. nullptr by default.
 	) const;
     
     /**
@@ -126,7 +126,7 @@ public:
     bool postNotification
 	(
 		notification_const_itr_t& aNotification,	///< The name of the notification you wish to post.
-		std::any aPayload							///< The payload associated with the specified notification.
+		std::any aPayload = nullptr					///< The payload associated with the specified notification. nullptr by default.
 	) const;
     
     /**

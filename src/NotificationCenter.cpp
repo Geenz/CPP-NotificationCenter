@@ -29,109 +29,109 @@ std::shared_ptr<NotificationCenter> NotificationCenter::mDefaultCenter = nullptr
 
 NotificationCenter::observer_const_itr_t NotificationCenter::addObserver(std::function<unsigned int(std::any)> aMethod, const std::string& aName)
 {
-    std::lock_guard<std::mutex> lock(mMutex);
-    NotificationObserver n;
-    n.mCallback = aMethod;
-    mObservers[aName].push_back(n);
+    std::lock_guard<std::mutex> aLock(mMutex);
+    NotificationObserver aNotificationObserver;
+    aNotificationObserver.mCallback = aMethod;
+    mObservers[aName].push_back(aNotificationObserver);
     return --mObservers[aName].end();
 }
 
-NotificationCenter::observer_const_itr_t NotificationCenter::addObserver(std::function<unsigned int(std::any)> method, notification_itr_t &notification)
+NotificationCenter::observer_const_itr_t NotificationCenter::addObserver(std::function<unsigned int(std::any)> aMethod, notification_itr_t &aNotification)
 {
-    std::lock_guard<std::mutex> lock(mMutex);
-    NotificationCenter::observer_const_itr_t retVal = notification->second.end();
-    if (notification != mObservers.end())
+    std::lock_guard<std::mutex> aLock(mMutex);
+    NotificationCenter::observer_const_itr_t aReturnValue = aNotification->second.end();
+    if (aNotification != mObservers.end())
     {
-        NotificationObserver n;
-        n.mCallback = method;
-        notification->second.push_back(n);
-        retVal = --notification->second.end();
+        NotificationObserver aNotificationObserver;
+        aNotificationObserver.mCallback = aMethod;
+        aNotification->second.push_back(aNotificationObserver);
+        aReturnValue = --aNotification->second.end();
     }
-    return retVal;
+    return aReturnValue;
 }
 
-void NotificationCenter::removeObserver(const std::string& name, observer_const_itr_t& observer)
+void NotificationCenter::removeObserver(const std::string& aName, observer_const_itr_t& aObserver)
 {
-    std::lock_guard<std::mutex> lock(mMutex);
-    notification_itr_t i = mObservers.find(name);
-    if (i != mObservers.end())
+    std::lock_guard<std::mutex> aLock(mMutex);
+    notification_itr_t aNotificationIterator = mObservers.find(aName);
+    if (aNotificationIterator != mObservers.end())
     {
-        i->second.erase(observer);
-    }
-}
-
-void NotificationCenter::removeObserver(notification_itr_t& notification, observer_const_itr_t& observer)
-{
-    std::lock_guard<std::mutex> lock(mMutex);
-    if (notification != mObservers.end())
-    {
-        notification->second.erase(observer);
+        aNotificationIterator->second.erase(aObserver);
     }
 }
 
-void NotificationCenter::removeAllObservers(const std::string& name)
+void NotificationCenter::removeObserver(notification_itr_t& aNotification, observer_const_itr_t& aObserver)
 {
-    std::lock_guard<std::mutex> lock(mMutex);
-    mObservers.erase(name);
-}
-
-void NotificationCenter::removeAllObservers(notification_itr_t& notification)
-{
-    std::lock_guard<std::mutex> lock(mMutex);
-    if (notification != mObservers.end())
+    std::lock_guard<std::mutex> aLock(mMutex);
+    if (aNotification != mObservers.end())
     {
-        mObservers.erase(notification);
+        aNotification->second.erase(aObserver);
     }
 }
 
-bool NotificationCenter::postNotification(const std::string& notification, std::any aPayload) const
+void NotificationCenter::removeAllObservers(const std::string& aName)
 {
-    std::lock_guard<std::mutex> lock(mMutex);
-    notification_const_itr_t i = mObservers.find(notification);
-    if (i != mObservers.end())
+    std::lock_guard<std::mutex> aLock(mMutex);
+    mObservers.erase(aName);
+}
+
+void NotificationCenter::removeAllObservers(notification_itr_t& aNotification)
+{
+    std::lock_guard<std::mutex> aLock(mMutex);
+    if (aNotification != mObservers.end())
     {
-        const std::list<NotificationObserver>& notiList = i->second;
-        for (observer_const_itr_t ia = notiList.begin(); ia != notiList.end(); ia++)
+        mObservers.erase(aNotification);
+    }
+}
+
+bool NotificationCenter::postNotification(const std::string& aNotification, std::any aPayload) const
+{
+    std::lock_guard<std::mutex> aLock(mMutex);
+    notification_const_itr_t aNotificationIterator = mObservers.find(aNotification);
+    if (aNotificationIterator != mObservers.end())
+    {
+        const std::list<NotificationObserver>& aNotificationList = aNotificationIterator->second;
+        for (observer_const_itr_t aIterator = aNotificationList.begin(); aIterator != aNotificationList.end(); aIterator++)
         {
-            ia->mCallback(aPayload);
+            aIterator->mCallback(aPayload);
         }
         return true;
     }
     else
     {
-        printf("WARNING: Notification \"%s\" does not exist.\n", notification.data());
+        printf("WARNING: Notification \"%s\" does not exist.\n", aNotification.data());
         return false;
     }
 }
 
-bool NotificationCenter::postNotification(NotificationCenter::notification_const_itr_t& notification, std::any aPayload) const
+bool NotificationCenter::postNotification(NotificationCenter::notification_const_itr_t& aNotification, std::any aPayload) const
 {
-    std::lock_guard<std::mutex> lock(mMutex);
-    if (notification != mObservers.end())
+    std::lock_guard<std::mutex> aLock(mMutex);
+    if (aNotification != mObservers.end())
     {
-        const std::list<NotificationObserver>& notiList = notification->second;
-        for (observer_const_itr_t i = notiList.begin(); i != notiList.end(); i++)
+        const std::list<NotificationObserver>& aNotificationList = aNotification->second;
+        for (observer_const_itr_t aIterator = aNotificationList.begin(); aIterator != aNotificationList.end(); aIterator++)
         {
-            i->mCallback(aPayload);
+            aIterator->mCallback(aPayload);
         }
         return true;
     }
     else
     {
-        printf("WARNING: Notification \"%s\" does not exist.\n", notification->first.data());
+        printf("WARNING: Notification \"%s\" does not exist.\n", aNotification->first.data());
         return false;
     }
 }
 
-NotificationCenter::notification_itr_t NotificationCenter::getNotificationIterator(const std::string& notification)
+NotificationCenter::notification_itr_t NotificationCenter::getNotificationIterator(const std::string& aNotification)
 {
-    notification_itr_t retVal;
-    if (mObservers.find(notification) != mObservers.end())
+    notification_itr_t aReturnValue;
+    if (mObservers.find(aNotification) != mObservers.end())
     {
-        retVal = mObservers.find(notification);
+        aReturnValue = mObservers.find(aNotification);
     }
     
-    return retVal;
+    return aReturnValue;
 }
 
 NotificationCenter& NotificationCenter::defaultNotificationCenter()
