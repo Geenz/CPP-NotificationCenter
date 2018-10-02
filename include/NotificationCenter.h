@@ -27,19 +27,16 @@
 #ifndef __Notification_Center_CPP__NotificationCenter__
 #define __Notification_Center_CPP__NotificationCenter__
 
-#include <iostream>
 #include <map>
 #include <functional>
 #include <string>
 #include <list>
-#include <memory>
-//#include <thread>
 #include <mutex>
 #include <any>
 
 struct NotificationObserver 
 {
-    std::function<unsigned int(std::any)> mCallback;
+    std::function<std::any(std::any)> mCallback;
 };
 
 class NotificationCenter 
@@ -60,7 +57,7 @@ public:
      */
     observer_const_itr_t addObserver
 	(
-		std::function<unsigned int(std::any)> aMethod,	///< The function callback.  Accepts unsigned int(std::any) methods or lambdas.
+		std::function<std::any(std::any)> aMethod,	///< The function callback.  Accepts unsigned int(std::any) methods or lambdas.
 		const std::string& aName						///< The name of the notification you wish to observe.
 	);
     
@@ -69,7 +66,7 @@ public:
      */
     observer_const_itr_t addObserver
 	(
-		std::function<unsigned int(std::any)> aMethod,	///< The function callback.  Accepts unsigned int(std::any) methods or lambdas.
+		std::function<std::any(std::any)> aMethod,	///< The function callback.  Accepts unsigned int(std::any) methods or lambdas.
 		notification_itr_t& aNotification				///< The name of the notification you wish to observe.
 	);
     

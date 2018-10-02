@@ -23,11 +23,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
+#include <iostream>
+
 #include "NotificationCenter.h"
 
-std::shared_ptr<NotificationCenter> NotificationCenter::mDefaultCenter = nullptr;
-
-NotificationCenter::observer_const_itr_t NotificationCenter::addObserver(std::function<unsigned int(std::any)> aMethod, const std::string& aName)
+NotificationCenter::observer_const_itr_t NotificationCenter::addObserver(std::function<std::any(std::any)> aMethod, const std::string& aName)
 {
     std::lock_guard<std::mutex> aLock(mMutex);
     NotificationObserver aNotificationObserver;
@@ -36,7 +37,7 @@ NotificationCenter::observer_const_itr_t NotificationCenter::addObserver(std::fu
     return --mObservers[aName].end();
 }
 
-NotificationCenter::observer_const_itr_t NotificationCenter::addObserver(std::function<unsigned int(std::any)> aMethod, notification_itr_t &aNotification)
+NotificationCenter::observer_const_itr_t NotificationCenter::addObserver(std::function<std::any(std::any)> aMethod, notification_itr_t &aNotification)
 {
     std::lock_guard<std::mutex> aLock(mMutex);
     NotificationCenter::observer_const_itr_t aReturnValue = aNotification->second.end();

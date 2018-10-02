@@ -47,7 +47,7 @@ public:
 void runNotification()
 {
 	auto i1 = NotificationCenter::defaultNotificationCenter().addObserver([=](std::any) -> unsigned int {printf("Recieved notification %d!\n", 1); return 0; }, "Poster");
-    auto i2 = NotificationCenter::defaultNotificationCenter().addObserver([=](std::any) -> unsigned int {printf("Recieved notification %d!\n", 2); return 0; }, "Poster");
+    auto i2 = NotificationCenter::defaultNotificationCenter().addObserver([=](std::any) -> bool {printf("Recieved notification %d!\n", 2); return true; }, "Poster");
     auto i3 = NotificationCenter::defaultNotificationCenter().addObserver([=](std::any) -> unsigned int {printf("Recieved notification %d!\n", 3); return 0; }, "Poster");
     auto i4 = NotificationCenter::defaultNotificationCenter().addObserver([=](std::any) -> unsigned int {printf("Recieved notification %d!\n", 4); return 0; }, "Poster");
     auto i5 = NotificationCenter::defaultNotificationCenter().addObserver([=](std::any) -> unsigned int {printf("Recieved notification %d!\n", 5); return 0; }, "Poster");
