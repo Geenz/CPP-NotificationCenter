@@ -92,7 +92,7 @@ bool NotificationCenter::postNotification(const std::string& aNotification, std:
     if (aNotificationIterator != mObservers.end())
     {
         const std::list<NotificationObserver>& aNotificationList = aNotificationIterator->second;
-        for (observer_const_itr_t aIterator = aNotificationList.begin(); aIterator != aNotificationList.end(); aIterator++)
+        for (observer_const_itr_t aIterator = aNotificationList.begin(); aIterator != aNotificationList.end(); ++aIterator)
         {
             aIterator->mCallback(aPayload);
         }
@@ -111,7 +111,7 @@ bool NotificationCenter::postNotification(NotificationCenter::notification_const
     if (aNotification != mObservers.end())
     {
         const std::list<NotificationObserver>& aNotificationList = aNotification->second;
-        for (observer_const_itr_t aIterator = aNotificationList.begin(); aIterator != aNotificationList.end(); aIterator++)
+        for (observer_const_itr_t aIterator = aNotificationList.begin(); aIterator != aNotificationList.end(); ++aIterator)
         {
             aIterator->mCallback(aPayload);
         }
