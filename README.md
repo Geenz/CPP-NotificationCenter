@@ -11,12 +11,13 @@ NotificationCenter::defaultNotificationCenter()->addObserver([=]{printf("Hello w
 NotificationCenter is intended to be included directly in your projects, as such no library (dynamic or static) is provided.
 
 ### Supported Compilers
-NotificationCenter requires a compiler that supports the following C++11 APIs:
+NotificationCenter requires a compiler that supports the following C++17 APIs:
 ```C++
 std::mutex
 std::function
 std::bind
 std::shared_ptr
+std::any
 ```
 It has been tested on the following compilers (as of December 15th, 2013):
 
@@ -36,7 +37,7 @@ Foo myFoo;
 NotificationCenter::defaultNotificationCenter()->addObserver(std::bind(&Foo::func, myFoo), "My Observer");
 ```
 
-Currently, only `void(void)` function signatures are supported.
+Currently, only `std::any(std::any)` function signatures are supported.
 
 ### Posting Notifications
 Posting notifications can be done with `NotificationCenter::postNotification`, like so:
@@ -59,9 +60,6 @@ You can also use more than one instance of NotificationCenter.  Although a defau
 
 ### Example Program
 The included example program shows you the basics of how to use NotificationCenter.  It's not intended to be sophisticated by any means, just to showcase the basics.
-
-### Future
-As it stands, NotificationCenter is currently limited in that it only supports callbacks with the signature of `void(void)`.  In the future, NotificationCenter may have support for additional function signatures either by making NotificationCenter a template, or by allowing one to specify arbitrary data in a similar way to NSNotification's userInfo parameter.
 
 ### Bugs
 I don't expect this to work flawlessly for all applications, and thread safety isn't something that I've tested particularly well.  If you find issues, feel free to file a bug.  If you wish to contribute, simply fork this repository and make a pull request.
