@@ -4,6 +4,7 @@
  *
  *  Created by Jonathan Goodman on 11/23/13.
  *  Copyright (c) 2013 Jonathan Goodman. All rights reserved.
+ *  Edited by Salvatore Rivieccio.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
