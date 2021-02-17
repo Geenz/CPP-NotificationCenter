@@ -19,12 +19,6 @@ std::bind
 std::shared_ptr
 std::any
 ```
-It has been tested on the following compilers (as of December 15th, 2013):
-
-Compiler Name | Version | Pass/Fail | Notes
---- | --- | --- | ---
-Clang | 3.3 | Pass | N/A
-MSVC | 2013 | Pass | N/A
 
 ### Adding Observers
 
