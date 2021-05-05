@@ -18,128 +18,134 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
 
-#include <iostream>
+#include <utility>
 
 #include "NotificationCenter.h"
 
-NotificationCenter::observer_const_itr_t NotificationCenter::addObserver(std::function<std::any(std::any)> aMethod, const std::string& aName)
+notification_center::observer_const_itr_t notification_center::add_observer(
+	std::function<std::any(std::any)> a_method, const std::string& a_name)
 {
-    std::lock_guard<std::mutex> aLock(mMutex);
-    NotificationObserver aNotificationObserver;
-    aNotificationObserver.mCallback = aMethod;
-    mObservers[aName].push_back(aNotificationObserver);
-    return --mObservers[aName].end();
+    std::lock_guard a_lock(m_mutex_);
+    notification_observer a_notification_observer;
+    a_notification_observer.m_callback = std::move(a_method);
+    m_observers_[a_name].push_back(a_notification_observer);
+    return --m_observers_[a_name].end();
 }
 
-NotificationCenter::observer_const_itr_t NotificationCenter::addObserver(std::function<std::any(std::any)> aMethod, notification_itr_t &aNotification)
+notification_center::observer_const_itr_t notification_center::add_observer(
+	std::function<std::any(std::any)> a_method, notification_itr_t& a_notification)
 {
-    std::lock_guard<std::mutex> aLock(mMutex);
-    NotificationCenter::observer_const_itr_t aReturnValue = aNotification->second.end();
-    if (aNotification != mObservers.end())
+    std::lock_guard a_lock(m_mutex_);
+    observer_const_itr_t a_return_value = a_notification->second.end();
+    if (a_notification != m_observers_.end())
     {
-        NotificationObserver aNotificationObserver;
-        aNotificationObserver.mCallback = aMethod;
-        aNotification->second.push_back(aNotificationObserver);
-        aReturnValue = --aNotification->second.end();
+        notification_observer a_notification_observer;
+        a_notification_observer.m_callback = std::move(a_method);
+        a_notification->second.push_back(a_notification_observer);
+        a_return_value = --a_notification->second.end();
     }
-    return aReturnValue;
+    return a_return_value;
 }
 
-void NotificationCenter::removeObserver(const std::string& aName, observer_const_itr_t& aObserver)
+void notification_center::remove_observer(const std::string& a_name, observer_const_itr_t& a_observer)
 {
-    std::lock_guard<std::mutex> aLock(mMutex);
-    notification_itr_t aNotificationIterator = mObservers.find(aName);
-    if (aNotificationIterator != mObservers.end())
+    std::lock_guard a_lock(m_mutex_);
+    if (auto a_notification_iterator = m_observers_.find(a_name);
+        a_notification_iterator != m_observers_.end())
     {
-        aNotificationIterator->second.erase(aObserver);
-    }
-}
-
-void NotificationCenter::removeObserver(notification_itr_t& aNotification, observer_const_itr_t& aObserver)
-{
-    std::lock_guard<std::mutex> aLock(mMutex);
-    if (aNotification != mObservers.end())
-    {
-        aNotification->second.erase(aObserver);
+        a_notification_iterator->second.erase(a_observer);
     }
 }
 
-void NotificationCenter::removeAllObservers(const std::string& aName)
+void notification_center::remove_observer(notification_itr_t& a_notification, observer_const_itr_t& a_observer)
 {
-    std::lock_guard<std::mutex> aLock(mMutex);
-    mObservers.erase(aName);
-}
-
-void NotificationCenter::removeAllObservers(notification_itr_t& aNotification)
-{
-    std::lock_guard<std::mutex> aLock(mMutex);
-    if (aNotification != mObservers.end())
+    std::lock_guard a_lock(m_mutex_);
+    if (a_notification != m_observers_.end())
     {
-        mObservers.erase(aNotification);
+        a_notification->second.erase(a_observer);
     }
 }
 
-bool NotificationCenter::postNotification(const std::string& aNotification, std::any aPayload) const
+void notification_center::remove_all_observers(const std::string& a_name)
 {
-    std::lock_guard<std::mutex> aLock(mMutex);
-    notification_const_itr_t aNotificationIterator = mObservers.find(aNotification);
-    if (aNotificationIterator != mObservers.end())
+    std::lock_guard a_lock(m_mutex_);
+    m_observers_.erase(a_name);
+}
+
+void notification_center::remove_all_observers(notification_itr_t& a_notification)
+{
+    std::lock_guard a_lock(m_mutex_);
+    if (a_notification != m_observers_.end())
     {
-        const std::list<NotificationObserver>& aNotificationList = aNotificationIterator->second;
-        for (observer_const_itr_t aIterator = aNotificationList.begin(); aIterator != aNotificationList.end(); ++aIterator)
+        m_observers_.erase(a_notification);
+    }
+}
+
+bool notification_center::post_notification(const std::string& a_notification, const std::any& a_payload) const
+{
+    std::lock_guard a_lock(m_mutex_);
+    if (const auto a_notification_iterator = m_observers_.find(a_notification);
+        a_notification_iterator != m_observers_.end())
+    {
+        const auto& a_notification_list = a_notification_iterator->second;
+        for (const auto& [callback] : a_notification_list)
         {
-            aIterator->mCallback(aPayload);
+	        // ReSharper disable once CppExpressionWithoutSideEffects
+	        callback(a_payload);
         }
         return true;
     }
     else
     {
-        printf("WARNING: Notification \"%s\" does not exist.\n", aNotification.data());
+        printf("WARNING: Notification \"%s\" does not exist.\n", a_notification.data());
         return false;
     }
 }
 
-bool NotificationCenter::postNotification(NotificationCenter::notification_const_itr_t& aNotification, std::any aPayload) const
+bool notification_center::post_notification(notification_const_itr_t& a_notification, const std::any&
+                                          a_payload) const
 {
-    std::lock_guard<std::mutex> aLock(mMutex);
-    if (aNotification != mObservers.end())
+    std::lock_guard a_lock(m_mutex_);
+    if (a_notification != m_observers_.end())
     {
-        const std::list<NotificationObserver>& aNotificationList = aNotification->second;
-        for (observer_const_itr_t aIterator = aNotificationList.begin(); aIterator != aNotificationList.end(); ++aIterator)
+        const auto& a_notification_list = a_notification->second;
+        for (const auto& [callback] : a_notification_list)
         {
-            aIterator->mCallback(aPayload);
+	        // ReSharper disable once CppExpressionWithoutSideEffects
+	        callback(a_payload);
         }
         return true;
     }
     else
     {
-        printf("WARNING: Notification \"%s\" does not exist.\n", aNotification->first.data());
+        printf("WARNING: Notification \"%s\" does not exist.\n", a_notification->first.data());
         return false;
     }
 }
 
-NotificationCenter::notification_itr_t NotificationCenter::getNotificationIterator(const std::string& aNotification)
+notification_center::notification_itr_t notification_center::get_notification_iterator(const std::string& a_notification)
 {
-    notification_itr_t aReturnValue;
-    if (mObservers.find(aNotification) != mObservers.end())
+    notification_itr_t a_return_value;
+    if (m_observers_.find(a_notification) != m_observers_.end())
     {
-        aReturnValue = mObservers.find(aNotification);
+        a_return_value = m_observers_.find(a_notification);
     }
     
-    return aReturnValue;
+    return a_return_value;
 }
 
-NotificationCenter& NotificationCenter::defaultNotificationCenter()
+notification_center& notification_center::default_notification_center()
 {
 	// Guaranteed to be destroyed. Instantiated on first use.
-	static NotificationCenter aNotificationcenter;
+	// ReSharper disable once CommentTypo
+	static notification_center a_notification;  // NOLINT(clang-diagnostic-exit-time-destructors)
     
-    return aNotificationcenter;
+    return a_notification;
 }
