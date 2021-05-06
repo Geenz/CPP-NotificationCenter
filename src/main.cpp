@@ -25,7 +25,7 @@
  * THE SOFTWARE.
  */
 
-// ReSharper disable CppExpressionWithoutSideEffects
+ // ReSharper disable CppExpressionWithoutSideEffects
 #include "NotificationCenter.h"
 
 struct point
@@ -33,17 +33,17 @@ struct point
 	int x, y;
 };
 
-class foo {
-    
+class foo
+{
 public:
 	// ReSharper disable once CppMemberFunctionMayBeStatic
 	unsigned int func(struct point* a_point)
-    {
-        printf("Hello std::bind!\n");
+	{
+		printf("Hello std::bind!\n");
 		a_point->x = 11;
 		a_point->y = 23;
 		return 0;
-    }
+	}
 };
 
 enum message
@@ -55,131 +55,130 @@ enum message
 void run_notification()
 {
 	auto i1 = notification_center::default_notification_center().add_observer(
-    poster,
-    [=](const std::any&) -> unsigned int
-	{
-		printf("Received notification %d!\n", 1);
-		return 0;
-	});
-    auto i2 = notification_center::default_notification_center().add_observer(
-    poster,
-    [=](const std::any&) -> bool
-    {
-	    printf("Received notification %d!\n", 2);
-	    return true;
-    });
-    auto i3 = notification_center::default_notification_center().add_observer(
-    poster,
-    [=](const std::any&) -> unsigned int
-    {
-	    printf("Received notification %d!\n", 3);
-	    return 0;
-    });
-    auto i4 = notification_center::default_notification_center().add_observer(
-    poster,
-    [=](const std::any&) -> unsigned int
-    {
-	    printf("Received notification %d!\n", 4);
-	    return 0;
-    });
-    auto i5 = notification_center::default_notification_center().add_observer(
-    poster,
-    [=](const std::any&) -> unsigned int
-    {
-	    printf("Received notification %d!\n", 5);
-	    return 0;
-    });
-    notification_center::default_notification_center().add_observer(
-    poster,
-    [=](const std::any&) -> unsigned int
-    {
-	    printf("Received notification %d!\n", 6);
-	    return 0;
-    });
-    notification_center::default_notification_center().add_observer(
-    poster,
-    [=](const std::any&) -> unsigned int
-    {
-	    printf("Received notification %d!\n", 7);
-	    return 0;
-    });
-    notification_center::default_notification_center().add_observer(
-    poster,
-    [=](const std::any&) -> unsigned int
-    {
-	    printf("Received notification %d!\n", 8);
-	    return 0;
-    });
-    
-    notification_center::default_notification_center().post_notification(poster);
-    
-    printf("============\n");
-    
-    notification_center::default_notification_center().remove_observer(poster, i1);
-    
-    notification_center::default_notification_center().post_notification(poster);
-    
-    printf("============\n");
-    
-    notification_center::default_notification_center().remove_observer(poster, i2);
-    
-    notification_center::default_notification_center().post_notification(poster);
-    
-    printf("============\n");
-    
-    notification_center::default_notification_center().remove_observer(poster, i3);
-    
-    notification_center::default_notification_center().post_notification(poster);
-    
-    printf("============\n");
-    
-    notification_center::default_notification_center().remove_observer(poster, i4);
-    
-    notification_center::default_notification_center().post_notification(poster);
-    
-    printf("============\n");
-    
-    notification_center::default_notification_center().remove_observer(poster, i5);
-    
-    notification_center::default_notification_center().post_notification(poster);
-    
-    printf("============\n");
-    
-    notification_center::default_notification_center().remove_all_observers(poster);
-    
-    notification_center::default_notification_center().post_notification(poster);
-    
-    printf("============\n");
-    
-    notification_center::default_notification_center().add_observer(
-    second_poster,
-    [=](const std::any&) -> unsigned int
-    {
-	    printf("Called by iterator!\n");
-	    return 0;
-    });
+		poster,
+		[=](const std::any&) -> unsigned int
+		{
+			printf("Received notification %d!\n", 1);
+			return 0;
+		});
+	auto i2 = notification_center::default_notification_center().add_observer(
+		poster,
+		[=](const std::any&) -> bool
+		{
+			printf("Received notification %d!\n", 2);
+			return true;
+		});
+	auto i3 = notification_center::default_notification_center().add_observer(
+		poster,
+		[=](const std::any&) -> unsigned int
+		{
+			printf("Received notification %d!\n", 3);
+			return 0;
+		});
+	auto i4 = notification_center::default_notification_center().add_observer(
+		poster,
+		[=](const std::any&) -> unsigned int
+		{
+			printf("Received notification %d!\n", 4);
+			return 0;
+		});
+	auto i5 = notification_center::default_notification_center().add_observer(
+		poster,
+		[=](const std::any&) -> unsigned int
+		{
+			printf("Received notification %d!\n", 5);
+			return 0;
+		});
+	notification_center::default_notification_center().add_observer(
+		poster,
+		[=](const std::any&) -> unsigned int
+		{
+			printf("Received notification %d!\n", 6);
+			return 0;
+		});
+	notification_center::default_notification_center().add_observer(
+		poster,
+		[=](const std::any&) -> unsigned int
+		{
+			printf("Received notification %d!\n", 7);
+			return 0;
+		});
+	notification_center::default_notification_center().add_observer(
+		poster,
+		[=](const std::any&) -> unsigned int
+		{
+			printf("Received notification %d!\n", 8);
+			return 0;
+		});
+
+	notification_center::default_notification_center().post_notification(poster);
+
+	printf("============\n");
+
+	notification_center::default_notification_center().remove_observer(i1);
+
+	notification_center::default_notification_center().post_notification(poster);
+
+	printf("============\n");
+
+	notification_center::default_notification_center().remove_observer(i2);
+
+	notification_center::default_notification_center().post_notification(poster);
+
+	printf("============\n");
+
+	notification_center::default_notification_center().remove_observer(i3);
+
+	notification_center::default_notification_center().post_notification(poster);
+
+	printf("============\n");
+
+	notification_center::default_notification_center().remove_observer(i4);
+
+	notification_center::default_notification_center().post_notification(poster);
+
+	printf("============\n");
+
+	notification_center::default_notification_center().remove_observer(i5);
+
+	notification_center::default_notification_center().post_notification(poster);
+
+	printf("============\n");
+
+	notification_center::default_notification_center().remove_all_observers(poster);
+
+	notification_center::default_notification_center().post_notification(poster);
+
+	printf("============\n");
+
+	notification_center::default_notification_center().add_observer(
+		second_poster,
+		[=](const std::any&) -> unsigned int
+		{
+			printf("Called by iterator!\n");
+			return 0;
+		});
 	auto itr = notification_center::default_notification_center().get_notification_iterator(second_poster);
-    notification_center::default_notification_center().post_notification(itr);
-    printf("============\n");
-    
-    foo myFoo;
-    
-	struct point aPoint {1,1};
-	printf("Point x.value = %d\n", aPoint.x);
-	printf("Point y.value = %d\n", aPoint.y);
-    notification_center::default_notification_center().add_observer(
-        second_poster,
-        std::bind(&foo::func, myFoo, &aPoint));  // NOLINT(modernize-avoid-bind)
+	notification_center::default_notification_center().post_notification(itr);
+	printf("============\n");
 
-    notification_center::default_notification_center().post_notification(second_poster);
-	printf("Point x.value = %d\n", aPoint.x);
-	printf("Point y.value = %d\n", aPoint.y);
+	foo my_foo;
+
+	struct point a_point { 1, 1 };
+	printf("Point x.value = %d\n", a_point.x);
+	printf("Point y.value = %d\n", a_point.y);
+	notification_center::default_notification_center().add_observer(
+		second_poster,
+		std::bind(&foo::func, my_foo, &a_point));  // NOLINT(modernize-avoid-bind)
+
+	notification_center::default_notification_center().post_notification(second_poster);
+	printf("Point x.value = %d\n", a_point.x);
+	printf("Point y.value = %d\n", a_point.y);
 }
 
-int main(int argc, const char * argv[])
+int main(int argc, const char* argv[])
 {
-    run_notification();
-    
-    return 0;
-}
+	run_notification();
 
+	return 0;
+}
