@@ -24,11 +24,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
+#pragma once
 #ifndef NOTIFICATION_CENTER_CPP_NOTIFICATION_CENTER
 #define NOTIFICATION_CENTER_CPP_NOTIFICATION_CENTER
 
-#include <map>
+#include <unordered_map>
 #include <functional>
 #include <list>
 #include <mutex>
@@ -42,8 +42,8 @@ struct notification_observer
 class notification_center
 {
 public:
-    typedef std::map<int, std::list<notification_observer> >::const_iterator notification_const_itr_t;
-    typedef std::map<int, std::list<notification_observer> >::iterator notification_itr_t;
+    typedef std::unordered_map<int, std::list<notification_observer> >::const_iterator notification_const_itr_t;
+    typedef std::unordered_map<int, std::list<notification_observer> >::iterator notification_itr_t;
     typedef std::list<notification_observer>::const_iterator observer_const_itr_t;
     typedef std::list<notification_observer>::iterator observer_itr_t;
 	typedef std::tuple<int, observer_const_itr_t>  notification_tuple_t;
@@ -137,7 +137,7 @@ public:
 
 private:
 	static std::shared_ptr<notification_center> m_default_center_;
-    std::map<int, std::list<notification_observer> > m_observers_;
+    std::unordered_map<int, std::list<notification_observer> > m_observers_;
 	typedef std::recursive_mutex mutex_t;
     mutable mutex_t m_mutex_;
 };
