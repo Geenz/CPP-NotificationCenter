@@ -30,7 +30,7 @@
 #include "NotificationCenter.h"
 
 notification_center::observer_const_itr_t notification_center::add_observer(
-	std::function<std::any(std::any)> a_method, const std::string& a_name)
+	const int a_name, std::function<std::any(std::any)> a_method)
 {
     std::lock_guard a_lock(m_mutex_);
     notification_observer a_notification_observer;
@@ -40,7 +40,7 @@ notification_center::observer_const_itr_t notification_center::add_observer(
 }
 
 notification_center::observer_const_itr_t notification_center::add_observer(
-	std::function<std::any(std::any)> a_method, notification_itr_t& a_notification)
+	notification_itr_t& a_notification,std::function<std::any(std::any)> a_method)
 {
     std::lock_guard a_lock(m_mutex_);
     observer_const_itr_t a_return_value = a_notification->second.end();
@@ -54,7 +54,7 @@ notification_center::observer_const_itr_t notification_center::add_observer(
     return a_return_value;
 }
 
-void notification_center::remove_observer(const std::string& a_name, observer_const_itr_t& a_observer)
+void notification_center::remove_observer(const int a_name, observer_const_itr_t& a_observer)
 {
     std::lock_guard a_lock(m_mutex_);
     if (auto a_notification_iterator = m_observers_.find(a_name);
@@ -73,7 +73,7 @@ void notification_center::remove_observer(notification_itr_t& a_notification, ob
     }
 }
 
-void notification_center::remove_all_observers(const std::string& a_name)
+void notification_center::remove_all_observers(const int a_name)
 {
     std::lock_guard a_lock(m_mutex_);
     m_observers_.erase(a_name);
@@ -88,7 +88,7 @@ void notification_center::remove_all_observers(notification_itr_t& a_notificatio
     }
 }
 
-bool notification_center::post_notification(const std::string& a_notification, const std::any& a_payload) const
+bool notification_center::post_notification(const int a_notification, const std::any& a_payload) const
 {
     std::lock_guard a_lock(m_mutex_);
     if (const auto a_notification_iterator = m_observers_.find(a_notification);
@@ -104,7 +104,7 @@ bool notification_center::post_notification(const std::string& a_notification, c
     }
     else
     {
-        printf("WARNING: Notification \"%s\" does not exist.\n", a_notification.data());
+        printf("WARNING: Notification \"%d\" does not exist.\n", a_notification);
         return false;
     }
 }
@@ -125,12 +125,12 @@ bool notification_center::post_notification(notification_const_itr_t& a_notifica
     }
     else
     {
-        printf("WARNING: Notification \"%s\" does not exist.\n", a_notification->first.data());
+        printf("WARNING: Notification \"%d\" does not exist.\n", a_notification->first);
         return false;
     }
 }
 
-notification_center::notification_itr_t notification_center::get_notification_iterator(const std::string& a_notification)
+notification_center::notification_itr_t notification_center::get_notification_iterator(const int a_notification)
 {
     notification_itr_t a_return_value;
     if (m_observers_.find(a_notification) != m_observers_.end())

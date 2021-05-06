@@ -30,7 +30,6 @@
 
 #include <map>
 #include <functional>
-#include <string>
 #include <list>
 #include <mutex>
 #include <any>
@@ -42,24 +41,20 @@ struct notification_observer
 
 class notification_center 
 {
-    static std::shared_ptr<notification_center> m_default_center_;
-    std::map<std::string, std::list<notification_observer> > m_observers_;
-    mutable std::mutex m_mutex_;
-
 public:
-    
-    typedef std::map<std::string, std::list<notification_observer> >::const_iterator notification_const_itr_t;
-    typedef std::map<std::string, std::list<notification_observer> >::iterator notification_itr_t;
+    typedef std::map<int, std::list<notification_observer> >::const_iterator notification_const_itr_t;
+    typedef std::map<int, std::list<notification_observer> >::iterator notification_itr_t;
     typedef std::list<notification_observer>::const_iterator observer_const_itr_t;
     typedef std::list<notification_observer>::iterator observer_itr_t;
+	typedef std::tuple<int, observer_const_itr_t>  notification_tuple_t;
     
     /**
      * This method adds a function callback as an observer to a named notification.
      */
     observer_const_itr_t add_observer
 	(
-		std::function<std::any(std::any)> a_method,	///< The function callback.  Accepts unsigned int(std::any) methods or lambdas.
-		const std::string& a_name						///< The name of the notification you wish to observe.
+		int a_name,       				    ///< The name of the notification you wish to observe.
+		std::function<std::any(std::any)> a_method	///< The function callback.  Accepts unsigned int(std::any) methods or lambdas.
 	);
     
     /**
@@ -67,8 +62,8 @@ public:
      */
     observer_const_itr_t add_observer
 	(
-		std::function<std::any(std::any)> a_method,	///< The function callback.  Accepts unsigned int(std::any) methods or lambdas.
-		notification_itr_t& a_notification				///< The name of the notification you wish to observe.
+		notification_itr_t& a_notification,				///< The name of the notification you wish to observe.
+		std::function<std::any(std::any)> a_method	    ///< The function callback.  Accepts unsigned int(std::any) methods or lambdas.
 	);
     
     /**
@@ -76,7 +71,7 @@ public:
      */
     void remove_observer
 	(
-		const std::string& a_name,		///< The name of the notification you wish to remove a given observer from.
+		int a_name,		///< The name of the notification you wish to remove a given observer from.
 		observer_const_itr_t& a_observer	///< The iterator to the observer you wish to remove.
 	);
     
@@ -94,7 +89,7 @@ public:
      */
     void remove_all_observers
 	(
-		const std::string& a_name	///< The name of the notification you wish to remove.
+		int a_name	///< The name of the notification you wish to remove.
 	);
     
     /**
@@ -112,7 +107,7 @@ public:
      */
     bool post_notification
 	(
-		const std::string& a_notification,	///< The name of the notification you wish to post.
+		int a_notification,	///< The name of the notification you wish to post.
 		const std::any& a_payload = nullptr			///< The payload associated with the specified notification. nullptr by default.
 	) const;
     
@@ -133,13 +128,19 @@ public:
      */
     notification_itr_t get_notification_iterator
 	(
-		const std::string& a_notification	///< The name of the notification you wish to post.
+		int a_notification	///< The name of the notification you wish to post.
 	);
     
     /**
      * This method returns the default global notification center.  You may alternatively create your own notification center without using the default notification center.
      */
     static notification_center& default_notification_center();
+
+private:
+	static std::shared_ptr<notification_center> m_default_center_;
+    std::map<int, std::list<notification_observer> > m_observers_;
+	typedef std::recursive_mutex mutex_t;
+    mutable mutex_t m_mutex_;
 };
 
 #endif /* defined(__Notification_Center_CPP__NotificationCenter__) */
