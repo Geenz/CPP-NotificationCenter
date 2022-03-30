@@ -25,8 +25,6 @@
  * THE SOFTWARE.
  */
 #pragma once
-#ifndef NOTIFICATION_CENTER_CPP_NOTIFICATION_CENTER
-#define NOTIFICATION_CENTER_CPP_NOTIFICATION_CENTER
 
 #include <unordered_map>
 #include <functional>
@@ -141,5 +139,3 @@ private:
 	typedef std::recursive_mutex mutex_t;
     mutable mutex_t m_mutex_;
 };
-
-#endif /* defined(__Notification_Center_CPP__NotificationCenter__) */

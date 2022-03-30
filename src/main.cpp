@@ -37,7 +37,7 @@ class foo
 {
 public:
 	// ReSharper disable once CppMemberFunctionMayBeStatic
-	unsigned int func(struct point* a_point)
+	static unsigned int func(struct point* a_point)
 	{
 		printf("Hello std::bind!\n");
 		a_point->x = 11;
@@ -158,25 +158,23 @@ void run_notification()
 			printf("Called by iterator!\n");
 			return 0;
 		});
-	auto itr = notification_center::default_notification_center().get_notification_iterator(second_poster);
-	notification_center::default_notification_center().post_notification(itr);
+	//auto itr = notification_center::default_notification_center().get_notification_iterator(second_poster);
+	//notification_center::default_notification_center().post_notification(itr);
 	printf("============\n");
-
-	foo my_foo;
 
 	struct point a_point { 1, 1 };
 	printf("Point x.value = %d\n", a_point.x);
 	printf("Point y.value = %d\n", a_point.y);
 	notification_center::default_notification_center().add_observer(
 		second_poster,
-		std::bind(&foo::func, my_foo, &a_point));  // NOLINT(modernize-avoid-bind)
+		std::bind(&foo::func, &a_point));  // NOLINT(modernize-avoid-bind)
 
 	notification_center::default_notification_center().post_notification(second_poster);
 	printf("Point x.value = %d\n", a_point.x);
 	printf("Point y.value = %d\n", a_point.y);
 }
 
-int main(int argc, const char* argv[])
+int main()
 {
 	run_notification();
 

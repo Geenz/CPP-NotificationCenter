@@ -43,7 +43,7 @@ notification_center::observer_const_itr_t notification_center::add_observer(
 	notification_itr_t& a_notification, std::function<std::any(std::any)> a_method)
 {
 	std::lock_guard a_lock(m_mutex_);
-	observer_const_itr_t a_return_value = a_notification->second.end();
+	auto a_return_value = a_notification->second.end();
 	if (a_notification != m_observers_.end())
 	{
 		notification_observer a_notification_observer;
