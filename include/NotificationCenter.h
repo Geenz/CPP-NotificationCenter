@@ -34,7 +34,7 @@
 
 struct notification_observer
 {
-    std::function<std::any(std::any)> m_callback;
+    std::function<std::any(std::any&)> m_callback;
 };
 
 class notification_center
@@ -52,7 +52,7 @@ public:
     notification_tuple_t add_observer
 	(
 		int a_name,       				    ///< The name of the notification you wish to observe.
-		std::function<std::any(std::any)> a_method	///< The function callback.  Accepts unsigned int(std::any) methods or lambdas.
+		std::function<std::any(std::any&)> a_method	///< The function callback.  Accepts unsigned int(std::any) methods or lambdas.
 	);
 
     /**
@@ -61,7 +61,7 @@ public:
     observer_const_itr_t add_observer
 	(
 		notification_itr_t& a_notification,				///< The name of the notification you wish to observe.
-		std::function<std::any(std::any)> a_method	    ///< The function callback.  Accepts unsigned int(std::any) methods or lambdas.
+		std::function<std::any(std::any&)> a_method	    ///< The function callback.  Accepts unsigned int(std::any) methods or lambdas.
 	);
 
     /**
@@ -104,8 +104,18 @@ public:
      */
     bool post_notification
 	(
-		int a_notification,	///< The name of the notification you wish to post.
-		const std::any& a_payload = nullptr			///< The payload associated with the specified notification. nullptr by default.
+		int a_notification,			///< The name of the notification you wish to post.
+		std::any& a_payload			///< The payload associated with the specified notification. nullptr by default.
+	) const;
+
+	/**
+     * This method posts a notification to a set of observers.
+     * If successful, this function calls all callbacks associated with that notification and return true.
+	 * If no such notification exists, this function will print a warning to the console and return false.
+     */
+	bool post_notification
+	(
+		int a_notification			///< The name of the notification you wish to post.
 	) const;
 
     /**
@@ -116,7 +126,17 @@ public:
     bool post_notification
 	(
 		notification_const_itr_t& a_notification,	///< The name of the notification you wish to post.
-		const std::any& a_payload = nullptr					///< The payload associated with the specified notification. nullptr by default.
+		std::any& a_payload						///< The payload associated with the specified notification. nullptr by default.
+	) const;
+
+	/**
+     * This method posts a notification to a set of observers.
+     * If successful, this function calls all callbacks associated with that notification and return true.
+	 * If no such notification exists, this function will print a warning to the console and return false.
+     */
+	bool post_notification
+	(
+		notification_const_itr_t& a_notification	///< The name of the notification you wish to post.
 	) const;
 
     /**

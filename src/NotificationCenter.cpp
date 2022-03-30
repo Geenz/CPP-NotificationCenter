@@ -30,7 +30,7 @@
 #include "NotificationCenter.h"
 
 notification_center::notification_tuple_t notification_center::add_observer(
-	const int a_name, std::function<std::any(std::any)> a_method)
+	const int a_name, std::function<std::any(std::any&)> a_method)
 {
 	std::lock_guard a_lock(m_mutex_);
 	notification_observer a_notification_observer;
@@ -40,7 +40,7 @@ notification_center::notification_tuple_t notification_center::add_observer(
 }
 
 notification_center::observer_const_itr_t notification_center::add_observer(
-	notification_itr_t& a_notification, std::function<std::any(std::any)> a_method)
+	notification_itr_t& a_notification, std::function<std::any(std::any&)> a_method)
 {
 	std::lock_guard a_lock(m_mutex_);
 	auto a_return_value = a_notification->second.end();
@@ -88,7 +88,7 @@ void notification_center::remove_all_observers(notification_itr_t& a_notificatio
 	}
 }
 
-bool notification_center::post_notification(const int a_notification, const std::any& a_payload) const
+bool notification_center::post_notification(const int a_notification, std::any& a_payload) const
 {
 	std::lock_guard a_lock(m_mutex_);
 	if (const auto a_notification_iterator = m_observers_.find(a_notification);
@@ -109,7 +109,15 @@ bool notification_center::post_notification(const int a_notification, const std:
 	}
 }
 
-bool notification_center::post_notification(notification_const_itr_t& a_notification, const std::any&
+bool notification_center::post_notification(int a_notification) const
+{
+	auto fake = nullptr;
+	auto payload = std::make_any<std::nullptr_t>(fake);
+	return post_notification(a_notification, payload);
+}
+
+
+bool notification_center::post_notification(notification_const_itr_t& a_notification, std::any&
 	a_payload) const
 {
 	std::lock_guard a_lock(m_mutex_);
@@ -128,6 +136,13 @@ bool notification_center::post_notification(notification_const_itr_t& a_notifica
 		printf("WARNING: Notification \"%d\" does not exist.\n", a_notification->first);
 		return false;
 	}
+}
+
+bool notification_center::post_notification(notification_center::notification_const_itr_t &a_notification) const
+{
+	auto fake = nullptr;
+	auto payload = std::make_any<std::nullptr_t>(fake);
+	return post_notification(a_notification, payload);
 }
 
 notification_center::notification_itr_t notification_center::get_notification_iterator(const int a_notification)

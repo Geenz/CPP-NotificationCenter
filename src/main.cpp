@@ -37,11 +37,12 @@ class foo
 {
 public:
 	// ReSharper disable once CppMemberFunctionMayBeStatic
-	static unsigned int func(struct point* a_point)
+	static unsigned int func(struct point* a_point, int a_value)
 	{
 		printf("Hello std::bind!\n");
 		a_point->x = 11;
 		a_point->y = 23;
+		printf("Hello value %d\n", a_value);
 		return 0;
 	}
 };
@@ -54,64 +55,61 @@ enum message
 
 void run_notification()
 {
+	auto lambda = [](std::any& any) -> std::any
+	{
+		try
+		{
+			auto message = std::any_cast<int>(any);
+			printf("Received notification %d!\n", message++);
+			any = std::make_any<int>(message);
+			return 0;
+		}
+		catch (const std::bad_any_cast&)
+		{
+			printf("Bad any cast!\n");
+			return 1;
+		}
+	};
+
 	auto i1 = notification_center::default_notification_center().add_observer(
 		poster,
-		[=](const std::any&) -> unsigned int
-		{
-			printf("Received notification %d!\n", 1);
-			return 0;
-		});
+		lambda);
+
 	auto i2 = notification_center::default_notification_center().add_observer(
 		poster,
-		[=](const std::any&) -> bool
-		{
-			printf("Received notification %d!\n", 2);
-			return true;
-		});
+		lambda);
+
 	auto i3 = notification_center::default_notification_center().add_observer(
 		poster,
-		[=](const std::any&) -> unsigned int
-		{
-			printf("Received notification %d!\n", 3);
-			return 0;
-		});
+		lambda);
+
 	auto i4 = notification_center::default_notification_center().add_observer(
 		poster,
-		[=](const std::any&) -> unsigned int
-		{
-			printf("Received notification %d!\n", 4);
-			return 0;
-		});
+		lambda);
+
 	auto i5 = notification_center::default_notification_center().add_observer(
 		poster,
-		[=](const std::any&) -> unsigned int
-		{
-			printf("Received notification %d!\n", 5);
-			return 0;
-		});
+		lambda);
+
 	notification_center::default_notification_center().add_observer(
 		poster,
-		[=](const std::any&) -> unsigned int
-		{
-			printf("Received notification %d!\n", 6);
-			return 0;
-		});
+		lambda);
+
 	notification_center::default_notification_center().add_observer(
 		poster,
-		[=](const std::any&) -> unsigned int
-		{
-			printf("Received notification %d!\n", 7);
-			return 0;
-		});
+		lambda);
+
 	notification_center::default_notification_center().add_observer(
 		poster,
-		[=](const std::any&) -> unsigned int
+		[=]<typename ...ARGS>(ARGS... args) -> unsigned int
 		{
 			printf("Received notification %d!\n", 8);
 			return 0;
 		});
 
-	notification_center::default_notification_center().post_notification(poster);
+	auto value = 1;
+	auto payload = std::make_any<int>(value);
+	notification_center::default_notification_center().post_notification(poster, payload);
 
 	printf("============\n");
 
@@ -167,7 +165,7 @@ void run_notification()
 	printf("Point y.value = %d\n", a_point.y);
 	notification_center::default_notification_center().add_observer(
 		second_poster,
-		std::bind(&foo::func, &a_point));  // NOLINT(modernize-avoid-bind)
+		std::bind(&foo::func, &a_point, 1));  // NOLINT(modernize-avoid-bind)
 
 	notification_center::default_notification_center().post_notification(second_poster);
 	printf("Point x.value = %d\n", a_point.x);
