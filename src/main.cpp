@@ -57,16 +57,16 @@ void run_notification()
 {
 	auto lambda = [](std::any& any) -> std::any
 	{
-		try
+		if(any.has_value())
 		{
 			auto message = std::any_cast<int>(any);
 			printf("Received notification %d!\n", message++);
 			any = std::make_any<int>(message);
 			return 0;
 		}
-		catch (const std::bad_any_cast&)
+		else
 		{
-			printf("Bad any cast!\n");
+			printf("No value!\n");
 			return 1;
 		}
 	};
@@ -101,7 +101,7 @@ void run_notification()
 
 	notification_center::default_notification_center().add_observer(
 		poster,
-		[=]<typename ...ARGS>(ARGS... args) -> unsigned int
+		[=](std::any&) -> unsigned int
 		{
 			printf("Received notification %d!\n", 8);
 			return 0;
@@ -156,8 +156,8 @@ void run_notification()
 			printf("Called by iterator!\n");
 			return 0;
 		});
-	//auto itr = notification_center::default_notification_center().get_notification_iterator(second_poster);
-	//notification_center::default_notification_center().post_notification(itr);
+	auto itr = notification_center::default_notification_center().get_notification_iterator(second_poster);
+	notification_center::default_notification_center().post_notification(itr);
 	printf("============\n");
 
 	struct point a_point { 1, 1 };

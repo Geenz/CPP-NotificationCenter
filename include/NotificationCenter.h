@@ -125,7 +125,7 @@ public:
      */
     bool post_notification
 	(
-		notification_const_itr_t& a_notification,	///< The name of the notification you wish to post.
+		notification_itr_t& a_notification,	///< The name of the notification you wish to post.
 		std::any& a_payload						///< The payload associated with the specified notification. nullptr by default.
 	) const;
 
@@ -136,7 +136,7 @@ public:
      */
 	bool post_notification
 	(
-		notification_const_itr_t& a_notification	///< The name of the notification you wish to post.
+		notification_itr_t& a_notification	///< The name of the notification you wish to post.
 	) const;
 
     /**

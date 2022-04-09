@@ -111,13 +111,12 @@ bool notification_center::post_notification(const int a_notification, std::any& 
 
 bool notification_center::post_notification(int a_notification) const
 {
-	auto fake = nullptr;
-	auto payload = std::make_any<std::nullptr_t>(fake);
+	std::any payload;
 	return post_notification(a_notification, payload);
 }
 
 
-bool notification_center::post_notification(notification_const_itr_t& a_notification, std::any&
+bool notification_center::post_notification(notification_itr_t& a_notification, std::any&
 	a_payload) const
 {
 	std::lock_guard a_lock(m_mutex_);
@@ -138,10 +137,9 @@ bool notification_center::post_notification(notification_const_itr_t& a_notifica
 	}
 }
 
-bool notification_center::post_notification(notification_center::notification_const_itr_t &a_notification) const
+bool notification_center::post_notification(notification_center::notification_itr_t &a_notification) const
 {
-	auto fake = nullptr;
-	auto payload = std::make_any<std::nullptr_t>(fake);
+	std::any payload;
 	return post_notification(a_notification, payload);
 }
 
