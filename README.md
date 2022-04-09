@@ -28,7 +28,7 @@ std::any
 
 ### Adding Observers
 
-Adding observers is a simple porcess. Simply invoke the method `NotificationCenter::addObserver` on your
+Adding observers is a simple process. Simply invoke the method `NotificationCenter::addObserver` on your
 NotificationCenter passing in a function pointer and string for the notification that this observer should respond to. A
 couple of examples of how to do this are:
 
